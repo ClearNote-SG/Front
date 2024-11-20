@@ -48,13 +48,15 @@ class _VoiceRecordingAppState extends State<VoiceRecordingApp> {
 
   void _startRecording() async {
     final directory = await getApplicationDocumentsDirectory();
-    final filePath = '${directory.path}/meeting_record_${DateTime.now().millisecondsSinceEpoch}.aac';
+    final filePath =
+        '${directory.path}/meeting_record_${DateTime.now().millisecondsSinceEpoch}.aac';
 
     await _recorder.startRecorder(toFile: filePath);
     setState(() {
       _isRecording = true;
       _recordedFilePath = filePath;
-      _recordingDate = DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now());
+      _recordingDate =
+          DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now());
     });
   }
 
@@ -77,7 +79,8 @@ class _VoiceRecordingAppState extends State<VoiceRecordingApp> {
 
       _recordingsByDate.clear(); // 날짜별 녹음 파일 초기화
       for (var filePath in _recordedFiles) {
-        String dateKey = DateFormat('yyyy-MM-dd').format(File(filePath).lastModifiedSync());
+        String dateKey =
+        DateFormat('yyyy-MM-dd').format(File(filePath).lastModifiedSync());
         if (!_recordingsByDate.containsKey(dateKey)) {
           _recordingsByDate[dateKey] = [];
         }
@@ -113,9 +116,12 @@ class _VoiceRecordingAppState extends State<VoiceRecordingApp> {
           ),
           Expanded(
             child: ListView.builder(
-              itemCount: _recordingsByDate[_selectedDay.toString().split(' ')[0]]?.length ?? 0,
+              itemCount: _recordingsByDate[_selectedDay.toString().split(' ')[0]]
+                  ?.length ??
+                  0,
               itemBuilder: (context, index) {
-                final filePath = _recordingsByDate[_selectedDay.toString().split(' ')[0]]![index];
+                final filePath = _recordingsByDate[
+                _selectedDay.toString().split(' ')[0]]![index];
 
                 return ListTile(
                   title: Text(
@@ -129,7 +135,8 @@ class _VoiceRecordingAppState extends State<VoiceRecordingApp> {
                       MaterialPageRoute(
                         builder: (context) => RecordingDetailPage(
                           filePath: filePath,
-                          recordingDate: _selectedDay.toString().split(' ')[0],
+                          recordingDate:
+                          _selectedDay.toString().split(' ')[0],
                         ),
                       ),
                     );
@@ -247,7 +254,6 @@ class _RecordingDetailPageState extends State<RecordingDetailPage> {
                 children: [
                   ElevatedButton(
                     onPressed: () {
-                      // 저장 기능 구현
                       print("회의록이 저장되었습니다.");
                     },
                     child: Text('저장'),
