@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:table_calendar/table_calendar.dart'; // 달력 패키지 추가
+import 'package:table_calendar/table_calendar.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -19,7 +19,6 @@ class VoiceRecordingApp extends StatefulWidget {
 
 class _VoiceRecordingAppState extends State<VoiceRecordingApp> {
   final FlutterSoundRecorder _recorder = FlutterSoundRecorder();
-  final FlutterSoundPlayer _player = FlutterSoundPlayer();
   bool _isRecording = false;
   String _recordedFilePath = '';
   String _recordingDate = '';
@@ -38,7 +37,6 @@ class _VoiceRecordingAppState extends State<VoiceRecordingApp> {
   void _initializeRecorder() async {
     await requestMicrophonePermission();
     await _recorder.openRecorder();
-    await _player.openPlayer();
   }
 
   Future<void> requestMicrophonePermission() async {
@@ -65,8 +63,6 @@ class _VoiceRecordingAppState extends State<VoiceRecordingApp> {
     setState(() {
       _isRecording = false;
     });
-    print('Recorded file path: $_recordedFilePath');
-    print('Recording date: $_recordingDate');
     _loadRecordedFiles();
   }
 
@@ -90,14 +86,9 @@ class _VoiceRecordingAppState extends State<VoiceRecordingApp> {
     });
   }
 
-  void _playRecording(String path) async {
-    await _player.startPlayer(fromURI: path);
-  }
-
   @override
   void dispose() {
     _recorder.closeRecorder();
-    _player.closePlayer();
     super.dispose();
   }
 
@@ -121,15 +112,30 @@ class _VoiceRecordingAppState extends State<VoiceRecordingApp> {
             },
           ),
           Expanded(
-            child: ListView(
-              children: _recordingsByDate[_selectedDay.toString().split(' ')[0]]?.map((filePath) {
+            child: ListView.builder(
+              itemCount: _recordingsByDate[_selectedDay.toString().split(' ')[0]]?.length ?? 0,
+              itemBuilder: (context, index) {
+                final filePath = _recordingsByDate[_selectedDay.toString().split(' ')[0]]![index];
+
                 return ListTile(
-                  title: Text('Recording: ${filePath.split('/').last}'),
-                  onTap: () => _playRecording(filePath),
+                  title: Text(
+                    'Recording: ${filePath.split('/').last}',
+                    style: TextStyle(fontSize: 16),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => RecordingDetailPage(
+                          filePath: filePath,
+                          recordingDate: _selectedDay.toString().split(' ')[0],
+                        ),
+                      ),
+                    );
+                  },
                 );
-              }).toList() ?? [
-                ListTile(title: Text('No recordings for this date.')),
-              ],
+              },
             ),
           ),
           Center(
@@ -137,7 +143,7 @@ class _VoiceRecordingAppState extends State<VoiceRecordingApp> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  _isRecording ? 'Recording...' : '회의 녹음 시작',
+                  _isRecording ? '녹음 중...' : '회의 녹음 시작',
                   style: TextStyle(fontSize: 20, color: Colors.blueAccent),
                 ),
                 SizedBox(height: 20),
@@ -149,13 +155,112 @@ class _VoiceRecordingAppState extends State<VoiceRecordingApp> {
                 SizedBox(height: 20),
                 if (_recordingDate.isNotEmpty)
                   Text(
-                    'Recorded on: $_recordingDate',
+                    '가장 최신 회의파일: $_recordingDate',
                     style: TextStyle(fontSize: 16, color: Colors.grey),
                   ),
               ],
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class RecordingDetailPage extends StatefulWidget {
+  final String filePath;
+  final String recordingDate;
+
+  RecordingDetailPage({required this.filePath, required this.recordingDate});
+
+  @override
+  _RecordingDetailPageState createState() => _RecordingDetailPageState();
+}
+
+class _RecordingDetailPageState extends State<RecordingDetailPage> {
+  final TextEditingController _titleController = TextEditingController();
+  final TextEditingController _mainContentController = TextEditingController();
+  final TextEditingController _conclusionController = TextEditingController();
+
+  @override
+  void dispose() {
+    _titleController.dispose();
+    _mainContentController.dispose();
+    _conclusionController.dispose();
+    super.dispose();
+  }
+
+  void _playRecording() {
+    final player = FlutterSoundPlayer();
+    player.openPlayer().then((_) {
+      player.startPlayer(fromURI: widget.filePath).then((_) {
+        // Optionally handle when playback is done
+      });
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('회의록 상세 정보'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                '회의 날짜: ${widget.recordingDate}',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 20),
+              TextField(
+                controller: _titleController,
+                decoration: InputDecoration(
+                  labelText: '회의 제목',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              SizedBox(height: 20),
+              TextField(
+                controller: _mainContentController,
+                decoration: InputDecoration(
+                  labelText: '주요 내용',
+                  border: OutlineInputBorder(),
+                ),
+                maxLines: 6,
+              ),
+              SizedBox(height: 20),
+              TextField(
+                controller: _conclusionController,
+                decoration: InputDecoration(
+                  labelText: '결론',
+                  border: OutlineInputBorder(),
+                ),
+                maxLines: 4,
+              ),
+              SizedBox(height: 30),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      // 저장 기능 구현
+                      print("회의록이 저장되었습니다.");
+                    },
+                    child: Text('저장'),
+                  ),
+                  ElevatedButton(
+                    onPressed: _playRecording,
+                    child: Text('녹음 재생'),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
