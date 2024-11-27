@@ -90,12 +90,12 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "com.example" "\0"
-            VALUE "FileDescription", "clearnote" "\0"
+            VALUE "FileDescription", "clear" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "clearnote" "\0"
+            VALUE "InternalName", "clear" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2024 com.example. All rights reserved." "\0"
-            VALUE "OriginalFilename", "clearnote.exe" "\0"
-            VALUE "ProductName", "clearnote" "\0"
+            VALUE "OriginalFilename", "clear.exe" "\0"
+            VALUE "ProductName", "clear" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

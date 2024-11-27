@@ -1,4 +1,4 @@
-# clearnote
+# clear
 
 A new Flutter project.
 

@@ -1,6 +1,6 @@
 {
-    "name": "clearnote",
-    "short_name": "clearnote",
+    "name": "clear",
+    "short_name": "clear",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
