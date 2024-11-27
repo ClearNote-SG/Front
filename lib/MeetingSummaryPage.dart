@@ -1,6 +1,4 @@
 import 'dart:convert';
-import 'dart:typed_data';
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
@@ -77,48 +75,6 @@ class _MeetingSummaryPageState extends State<MeetingSummaryPage> {
           (route) => false, // 이전 경로를 모두 제거하고 새로운 화면으로 이동
     );
   }
-  /*
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.meetingTitle), // 회의 제목 표시
-        actions: [
-          IconButton(
-            icon: Icon(Icons.home),
-            onPressed: () {
-              Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(builder: (context) => VoiceRecordingApp()), // 첫 화면으로 이동
-                    (Route<dynamic> route) => false, // 이전 화면 모두 제거
-              );
-            },
-          ),
-        ],
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              widget.meetingTitle, // 회의 제목
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 20),
-            SingleChildScrollView(
-              child: Text(
-                _meetingSummary, // 회의 요약
-                style: TextStyle(fontSize: 16),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-*/
 
   @override
   Widget build(BuildContext context) {

@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_sound/flutter_sound.dart';
@@ -7,7 +6,6 @@ import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 
 import 'MeetingSummaryPage.dart';
-import 'RecordingDetailPage.dart';
 
 class MeetingSTTPage extends StatefulWidget {
   final int meetingId;
@@ -43,11 +41,6 @@ class _MeetingSTTPageState extends State<MeetingSTTPage> {
   Future<void> _fetchMeetingSTTData() async {
     try {
       final String apiUrl = "http://10.0.2.2:8080/stt"; // 백엔드 URL
-      /*final response = await http.post(
-        Uri.parse(apiUrl),
-        headers: {'Content-Type': 'application/json'},
-        body: json.encode({'meetingId': widget.meetingId.toString()}), // ID 전송
-      );*/
       var request = http.MultipartRequest('POST', Uri.parse(apiUrl))
         ..fields['meetingId'] = widget.meetingId.toString(); // 회의 ID 추가
 
@@ -99,55 +92,6 @@ class _MeetingSTTPageState extends State<MeetingSTTPage> {
       });
     }
   }
-/*
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('회의록 STT'),
-      ),
-      body: _isLoading
-          ? Center(child: CircularProgressIndicator()) // 로딩 중일 때
-          : Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              '회의 텍스트:',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 10),
-            Expanded(
-              child: SingleChildScrollView(
-                child: Text(
-                  _meetingText,
-                  style: TextStyle(fontSize: 16),
-                ),
-              ),
-            ),
-            SizedBox(height: 20),
-            Center(
-              child: ElevatedButton(
-                onPressed: _audioBytes != null ? _playAudio : null,
-                child: Text(_isPlaying ? '정지' : '음성 재생'),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
- */
-  // 요약 페이지로 이동
-  /*
-  void _goToSummaryPage() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => RecordingDetailPage(id: widget.meetingId, recordingDate: "")),
-    );
-  }*/
-  // 이미지 선택
   // 이미지 선택
   Future<void> _pickImage() async {
     final ImagePicker picker = ImagePicker();
@@ -183,71 +127,6 @@ class _MeetingSTTPageState extends State<MeetingSTTPage> {
       );
     }
   }
-
-  /*@override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-            widget.meetingTitle, // 전달받은 회의 제목
-            style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-      ),
-      body: _isLoading
-          ? Center(child: CircularProgressIndicator()) // 로딩 중일 때
-          : Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // 회의 제목 표시
-            Text(
-              "회의 텍스트", // 전달받은 회의 제목
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 10),
-            // 회의 텍스트 박스 (스크롤 가능)
-            Expanded(
-              child: SingleChildScrollView(
-                child: Text(
-                  _meetingText,
-                  style: TextStyle(fontSize: 16),
-                ),
-              ),
-            ),
-            SizedBox(height: 20),
-            // 음성 재생 버튼
-            // 회의록 양식 선택 및 요약 버튼
-            Center(
-
-              child: ElevatedButton(
-                onPressed: _pickImage, // 이미지 선택
-                child: Text('회의록 양식 선택 및 요약'),
-              ),
-            ),
-            SizedBox(height: 20),
-            // 선택된 이미지 미리보기 (이미지가 선택되었을 때만 표시)
-            if (_selectedImage != null)
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Image.file(
-                  File(_selectedImage!.path),
-                  height: 150, // 이미지 크기 조정
-                  width: 150,
-                  fit: BoxFit.cover,
-                ),
-              ),
-            // 요약 페이지로 가는 버튼
-            Center(
-              child: ElevatedButton(
-                onPressed: _goToSummaryPage,
-                child: Text('양식 및 요약 확인'),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }*/
 
   @override
   Widget build(BuildContext context) {

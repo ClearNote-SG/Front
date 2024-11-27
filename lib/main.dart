@@ -10,7 +10,6 @@ import 'package:table_calendar/table_calendar.dart';
 
 // RecordingDetailPage 위젯을 import 합니다.
 import 'MeetingSTTPage.dart';
-import 'RecordingDetailPage.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart'; // MediaType 추가
 
@@ -32,9 +31,6 @@ class _VoiceRecordingAppState extends State<VoiceRecordingApp> {
   String _recordingDate = '';
   List<String> _recordedFiles = [];
   List<int> _recordedIds = [];
-  //Map<String, List<String>> _recordingsByDate = {}; // 날짜별 녹음 파일
-  List<String> _recordingByDate = [];
-
   DateTime _selectedDay = DateTime.now();
 
   @override
@@ -83,27 +79,6 @@ class _VoiceRecordingAppState extends State<VoiceRecordingApp> {
     _uploadRecording();
   }
 
-  /*void _loadRecordedFiles() async {
-    final directory = await getApplicationDocumentsDirectory();
-    final List<FileSystemEntity> files = Directory(directory.path).listSync();
-    setState(() {
-      _recordedFiles = files
-          .where((file) => file.path.endsWith('.aac'))
-          .map((file) => file.path)
-          .toList();
-
-      _recordingsByDate.clear(); // 날짜별 녹음 파일 초기화
-      for (var filePath in _recordedFiles) {
-        String dateKey =
-        DateFormat('yyyy-MM-dd').format(File(filePath).lastModifiedSync());
-        if (!_recordingsByDate.containsKey(dateKey)) {
-          _recordingsByDate[dateKey] = [];
-        }
-        _recordingsByDate[dateKey]!.add(filePath);
-      }
-    });
-  }*/
-
   Future<void> _loadRecordedFiles() async {
     try {
       final selectedDate = DateFormat('yyyy-MM-dd').format(_selectedDay); // 날짜 포맷 (yyyy-MM-dd)
@@ -123,7 +98,6 @@ class _VoiceRecordingAppState extends State<VoiceRecordingApp> {
         final Map<String, dynamic> meetingData = json.decode(decodedBody); // 서버 응답 데이터
         final List<String> titles = [];
         final List<int> ids = [];
-        //final List<LocalDateTime> times = [];
 
         int i=1;
         // 서버에서 받은 데이터에서 제목만 추출
@@ -164,7 +138,6 @@ class _VoiceRecordingAppState extends State<VoiceRecordingApp> {
       );
 
       request.files.add(multipartFile);
-
 
       // 서버에 파일 전송
       final response = await request.send();
@@ -221,16 +194,10 @@ class _VoiceRecordingAppState extends State<VoiceRecordingApp> {
                     // RecordingDetailPage로 이동
                     Navigator.push(
                       context,
-                      /*MaterialPageRoute(
-                        builder: (context) => RecordingDetailPage(
-                          id: _recordedIds[index],
-                          recordingDate: _selectedDay.toString().split(' ')[0],
-                        ),*/
                         MaterialPageRoute(
                         builder: (context) => MeetingSTTPage(
                           meetingId: _recordedIds[index],
                           meetingTitle: _recordedFiles[index],
-                          //recordingDate: _selectedDay.toString().split(' ')[0],
                         ),
                       ),
                     );
